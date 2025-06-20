@@ -2,6 +2,8 @@ services:
   aptabase_db:
     image: "postgres:15-alpine"
     restart: always
+    volumes:
+      - db-data:/var/lib/postgresql/data
     environment:
       - "POSTGRES_USER=${SERVICE_USER_POSTGRES}"
       - "POSTGRES_PASSWORD=${SERVICE_PASSWORD_POSTGRES}"
@@ -21,6 +23,8 @@ services:
   aptabase_events_db:
     image: "clickhouse/clickhouse-server:23.8.4.69-alpine"
     restart: always
+    volumes:
+      - events-db-data:/var/lib/clickhouse
     environment:
       - "CLICKHOUSE_USER=${SERVICE_USER_CLICKHOUSE}"
       - "CLICKHOUSE_PASSWORD=${SERVICE_PASSWORD_CLICKHOUSE}"
@@ -54,3 +58,9 @@ services:
       - "AUTH_SECRET=${SERVICE_BASE64_APTABASE}"
       - "DATABASE_URL=Server=aptabase_db;Port=5432;User Id=${SERVICE_USER_POSTGRES};Password=${SERVICE_PASSWORD_POSTGRES};Database=aptabase"
       - "CLICKHOUSE_URL=Host=aptabase_events_db;Port=8123;Username=${SERVICE_USER_CLICKHOUSE};Password=${SERVICE_PASSWORD_CLICKHOUSE}"
+
+volumes:
+  db-data:
+    driver: local
+  events-db-data:
+    driver: local
